@@ -3,6 +3,9 @@
 A powerful yet very lightweight terminal for engineers. Specially tuned for daily work with UART, STM32, ESP, nRF, etc.
 
 ![Amber Terminal Screenshot](screenshots/musbs_term_amber.py.png)
+
+<img src="screenshots/musbs_term_blue.py.png" alt="Описание" width="300"/>
+
 ## Features
 
 - Hotkeys for everything
