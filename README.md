@@ -5,6 +5,8 @@ A powerful yet very lightweight terminal for engineers. Specially tuned for dail
 ![Amber Terminal Screenshot](screenshots/musbs_term_amber.py.png)
 
 <img src="screenshots/musbs_term_blue.py.png" alt="Описание" width="300"/>
+<img src="screenshots/musbs_term_green_a.py.png" alt="Описание" width="300"/>
+<img src="screenshots/musbs_term_green_b.py.png" alt="Описание" width="300"/>
 
 ## Features
 
