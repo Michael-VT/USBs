@@ -3,6 +3,9 @@
 Мощный, но очень лёгкий терминал для инженеров. Специально заточен под ежедневную работу с UART, STM32, ESP, nRF и т.д.
 
 ![Скриншот терминала Amber](screenshots/musbs_term_amber.py.png)
+<img src="screenshots/musbs_term_blue.py.png" alt="Описание" width="300"/>
+<img src="screenshots/musbs_term_green_a.py.png" alt="Описание" width="300"/>
+<img src="screenshots/musbs_term_green_b.py.png" alt="Описание" width="300"/>
 
 ## Возможности
 
