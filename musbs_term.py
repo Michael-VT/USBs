@@ -197,12 +197,21 @@ class App:
         self.hex_label.config(text="HEX:")
 
     def save_log_auto(self):
+        now = datetime.now()
+        filename = now.strftime("%Y-%m-%d-%H-%M-%S-term.txt")
         fn = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_term.txt")
+        content = "".join(self.log_buffer)
         try:
             with open(fn, "w", encoding="utf-8") as f:
                 f.write("".join(self.log_buffer))
-        except:
-            pass
+            messagebox.showinfo("Сохранено", f"Лог сохранён:\n{filename}")
+            self.root.clipboard_clear()
+            self.root.clipboard_append("".join(self.log_buffer))
+            self.root.update()
+        except Exception as e:
+            messagebox.showerror("Ошибка", str(e))
+        # except:
+            # pass
 
     def save_profile_default(self):
         self.cfg["commands"] = self.commands
