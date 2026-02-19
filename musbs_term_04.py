@@ -280,67 +280,17 @@ Click HEX → copy to clipboard"""
     def on_rx(self, data: bytes):
         if self.help_shown:
             return
-
-        # txt = data.decode(errors="ignore").rstrip('\r\n')
-        txt = data.decode(errors="ignore").rstrip('\n'.rstrip('\r'))
-
-        # Если после удаления EOL осталась пустая строка — ничего не выводим
-        if not txt.strip():
-            return
-
-        # Добавляем только одну перенос строки в конце
-        self.log_buffer.append(txt + '\n')
-        self.log.insert("end", txt + '\n')
+        txt = data.decode(errors="ignore")
+        if self.eol_mode == "add_n" and not txt.endswith("\n"):
+            txt += "\n"
+        elif self.eol_mode == "add_rn" and not txt.endswith("\r\n"):
+            txt += "\r\n"
+        self.log_buffer.append(txt)
+        self.log.insert("end", txt)
         self.log.see("end")
 
         hx = " ".join(f"{b:02X}" for b in data)
         self.hex_label.config(text=f"HEX: {hx}")
-
-#    def on_rx(self, data: bytes):
-#        if self.help_shown:
-#            return
-#        
-#        txt = data.decode(errors="ignore").rstrip('\r\n')
-#    
-#        # Если после удаления EOL осталась пустая строка — ничего не выводим
-#        if not txt.strip():
-#            return
-#        
-#        # Добавляем только одну перенос строки в конце
-#        self.log_buffer.append(txt + '\n')
-#        self.log.insert("end", txt + '\n')
-#        self.log.see("end")
-#
-#        hx = " ".join(f"{b:02X}" for b in data)
-#        self.hex_label.config(text=f"HEX: {hx}")
-
-#    def on_rx(self, data: bytes):
-#        if self.help_shown:
-#            return
-#        txt = data.decode(errors="ignore").rstrip('\r\n')  # убираем trailing EOL
-#        if not txt:                                        # пустая строка после очистки
-#            return                                         # → не выводим вообще
-#        self.log_buffer.append(txt + '\n')                 # добавляем только одну \n
-#        self.log.insert("end", txt + '\n')
-#        self.log.see("end")
-#
-#        hx = " ".join(f"{b:02X}" for b in data)
-#        self.hex_label.config(text=f"HEX: {hx}")
-
-#    def on_rx(self, data: bytes):
-#        if self.help_shown:
-#            return
-#        txt = data.decode(errors="ignore")
-#        if self.eol_mode == "add_n" and not txt.endswith("\n"):
-#            txt += "\n"
-#        elif self.eol_mode == "add_rn" and not txt.endswith("\r\n"):
-#            txt += "\r\n"
-#        self.log_buffer.append(txt)
-#        self.log.insert("end", txt)
-#        self.log.see("end")
-#
-#        hx = " ".join(f"{b:02X}" for b in data)
-#        self.hex_label.config(text=f"HEX: {hx}")
 
     def send(self, event=None):
         txt = self.entry.get().strip()

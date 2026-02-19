@@ -5,9 +5,7 @@
   "commands": [
     "AT",
     "ATVER",
-    "ATVER",
-    "ATSTMCRL",
-    "ATSTMCRI?",
+    "ATST?",
     "ATST0",
     "ATST1",
     "ATST2",
@@ -52,7 +50,7 @@
     "ATST170",
     "ATST171",
     "ATST170=M",
-    "ATST999"
+    ""
   ],
   "repeat_sec": 1.0,
   "repeat_cnt": 0

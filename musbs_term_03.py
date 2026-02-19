@@ -92,8 +92,6 @@ class App:
         self.last_cmd = ""
         self.repeat_after = None
         self.help_shown = False
-        self.font_size = 11  # default font size
-        self.eol_mode = cfg.get("eol_mode", "none")  # 'none', 'add_n', 'add_rn'
 
         self.backend = SerialBackend(cfg, self.on_rx, self.set_status, root)
 
@@ -120,12 +118,6 @@ class App:
         menubar.add_command(label="Port settings", command=self.port_settings)
         menubar.add_command(label="Save log", command=self.save_log_manual)
 
-        eol_menu = tk.Menu(menubar, tearoff=0)
-        eol_menu.add_command(label="No EOL", command=lambda: self.set_eol("none"))
-        eol_menu.add_command(label="Add \\n", command=lambda: self.set_eol("add_n"))
-        eol_menu.add_command(label="Add \\r\\n", command=lambda: self.set_eol("add_rn"))
-        menubar.add_cascade(label="EOL Mode", menu=eol_menu)
-
         self.root.config(menu=menubar)
 
         paned = ttk.Panedwindow(self.root, orient="horizontal")
@@ -134,7 +126,7 @@ class App:
         left = ttk.Frame(paned)
         paned.add(left, weight=3)
 
-        self.log = tk.Text(left, font=("Menlo", self.font_size))
+        self.log = tk.Text(left, font=("Menlo", 11))
         self.log.pack(fill="both", expand=True)
 
         self.status = ttk.Label(left, text="Port: —", foreground="gray")
@@ -182,37 +174,17 @@ class App:
         self.listbox.bind("<Button-1>", self.on_list_click)
         self.listbox.bind("<Double-Button-1>", self.edit_cmd)
 
-    def set_eol(self, mode):
-        self.eol_mode = mode
-        self.cfg["eol_mode"] = mode
-
     def set_status(self, msg):
         color = "lime" if "connected" in msg else "red"
         self.root.after(0, lambda: self.status.config(text=f"Port: {msg}", foreground=color))
 
     def bind_keys(self):
         self.root.bind("<Control-x>", lambda e: self.quit())
-        self.root.bind("<Control-b>", lambda e: self.clear())  # Ctrl+B: clear
-        self.root.bind("<Control-c>", lambda e: self.copy_selected())  # Ctrl+C: copy selected
+        self.root.bind("<Control-c>", lambda e: self.clear())
         self.root.bind("<Control-s>", lambda e: self.save_log_auto())
         self.root.bind("<Control-f>", lambda e: self.save_profile_default())
         self.root.bind("<Control-h>", lambda e: self.show_help())
         self.root.bind("<Escape>", lambda e: self.hide_help())
-        self.root.bind("<Control-equal>", lambda e: self.font_zoom(1))  # Ctrl+= zoom in
-        self.root.bind("<Control-minus>", lambda e: self.font_zoom(-1))  # Ctrl+- zoom out
-
-    def font_zoom(self, delta):
-        self.font_size += delta
-        if self.font_size < 6: self.font_size = 6
-        self.log.config(font=("Menlo", self.font_size))
-
-    def copy_selected(self):
-        try:
-            sel = self.log.selection_get()
-            self.root.clipboard_clear()
-            self.root.clipboard_append(sel)
-        except:
-            pass
 
     def quit(self):
         self.backend.close()
@@ -225,23 +197,26 @@ class App:
         self.hex_label.config(text="HEX:")
 
     def save_log_auto(self):
+        now = datetime.now()
+        filename = now.strftime("%Y-%m-%d-%H-%M-%S-term.txt")
         fn = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_term.txt")
         content = "".join(self.log_buffer)
         try:
             with open(fn, "w", encoding="utf-8") as f:
-                f.write(content)
+                f.write("".join(self.log_buffer))
+            messagebox.showinfo("Сохранено", f"Лог сохранён:\n{filename}")
             self.root.clipboard_clear()
-            self.root.clipboard_append(content)
+            self.root.clipboard_append("".join(self.log_buffer))
             self.root.update()
-        except:
-            pass
+        except Exception as e:
+            messagebox.showerror("Ошибка", str(e))
+        # except:
+            # pass
 
     def save_profile_default(self):
         self.cfg["commands"] = self.commands
         self.cfg["repeat_sec"] = self.repeat_sec.get()
         self.cfg["repeat_cnt"] = self.repeat_cnt.get()
-        self.cfg["font_size"] = self.font_size
-        self.cfg["eol_mode"] = self.eol_mode
         try:
             with open(DEFAULT_PROFILE, "w", encoding="utf-8") as f:
                 json.dump(self.cfg, f, indent=2, ensure_ascii=False)
@@ -253,14 +228,11 @@ class App:
             return
         self.log.delete("1.0", "end")
         text = """Ctrl+X  Quit
-Ctrl+B  Clear
-Ctrl+C  Copy selected text
-Ctrl+S  Save log (auto name) + copy to clipboard
+Ctrl+C  Clear
+Ctrl+S  Save log (auto name)
 Ctrl+F  Save profile default
 Ctrl+H  This help
 Esc     Back to log
-Ctrl+=  Zoom in font
-Ctrl+-  Zoom out font
 
 Click line → send + copy to entry
 Double click → edit
@@ -280,67 +252,13 @@ Click HEX → copy to clipboard"""
     def on_rx(self, data: bytes):
         if self.help_shown:
             return
-
-        # txt = data.decode(errors="ignore").rstrip('\r\n')
-        txt = data.decode(errors="ignore").rstrip('\n'.rstrip('\r'))
-
-        # Если после удаления EOL осталась пустая строка — ничего не выводим
-        if not txt.strip():
-            return
-
-        # Добавляем только одну перенос строки в конце
-        self.log_buffer.append(txt + '\n')
-        self.log.insert("end", txt + '\n')
+        txt = data.decode(errors="ignore")
+        self.log_buffer.append(txt)
+        self.log.insert("end", txt)
         self.log.see("end")
 
         hx = " ".join(f"{b:02X}" for b in data)
         self.hex_label.config(text=f"HEX: {hx}")
-
-#    def on_rx(self, data: bytes):
-#        if self.help_shown:
-#            return
-#        
-#        txt = data.decode(errors="ignore").rstrip('\r\n')
-#    
-#        # Если после удаления EOL осталась пустая строка — ничего не выводим
-#        if not txt.strip():
-#            return
-#        
-#        # Добавляем только одну перенос строки в конце
-#        self.log_buffer.append(txt + '\n')
-#        self.log.insert("end", txt + '\n')
-#        self.log.see("end")
-#
-#        hx = " ".join(f"{b:02X}" for b in data)
-#        self.hex_label.config(text=f"HEX: {hx}")
-
-#    def on_rx(self, data: bytes):
-#        if self.help_shown:
-#            return
-#        txt = data.decode(errors="ignore").rstrip('\r\n')  # убираем trailing EOL
-#        if not txt:                                        # пустая строка после очистки
-#            return                                         # → не выводим вообще
-#        self.log_buffer.append(txt + '\n')                 # добавляем только одну \n
-#        self.log.insert("end", txt + '\n')
-#        self.log.see("end")
-#
-#        hx = " ".join(f"{b:02X}" for b in data)
-#        self.hex_label.config(text=f"HEX: {hx}")
-
-#    def on_rx(self, data: bytes):
-#        if self.help_shown:
-#            return
-#        txt = data.decode(errors="ignore")
-#        if self.eol_mode == "add_n" and not txt.endswith("\n"):
-#            txt += "\n"
-#        elif self.eol_mode == "add_rn" and not txt.endswith("\r\n"):
-#            txt += "\r\n"
-#        self.log_buffer.append(txt)
-#        self.log.insert("end", txt)
-#        self.log.see("end")
-#
-#        hx = " ".join(f"{b:02X}" for b in data)
-#        self.hex_label.config(text=f"HEX: {hx}")
 
     def send(self, event=None):
         txt = self.entry.get().strip()
@@ -437,8 +355,6 @@ Click HEX → copy to clipboard"""
         data["commands"] = self.commands
         data["repeat_sec"] = self.repeat_sec.get()
         data["repeat_cnt"] = self.repeat_cnt.get()
-        data["font_size"] = self.font_size
-        data["eol_mode"] = self.eol_mode
         with open(f"{PROFILE_DIR}/{name}.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
@@ -453,9 +369,6 @@ Click HEX → copy to clipboard"""
         self.commands = data.get("commands", [""] * LINES_COUNT)
         self.repeat_sec.set(data.get("repeat_sec", 1.0))
         self.repeat_cnt.set(data.get("repeat_cnt", 0))
-        self.font_size = data.get("font_size", 11)
-        self.eol_mode = data.get("eol_mode", "none")
-        self.log.config(font=("Menlo", self.font_size))
         self.log.delete("1.0", "end")
         self.listbox.delete(0, "end")
         for c in self.commands:
@@ -518,3 +431,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
