@@ -6,6 +6,14 @@
     "AT",
     "ATVER",
     "ATST?",
+    "ATST1",
+    "ATST150",
+    "ATSTMCRI",
+    "ATSTMCRL",
+    "AT",
+    "ATVER",
+    "ATSTMCRL",
+    "ATSTMCRI",
     "ATST0",
     "ATST1",
     "ATST2",
@@ -48,10 +56,12 @@
     "ATST168",
     "ATST169",
     "ATST170",
-    "ATST171",
     "ATST170=M",
-    ""
+    "ATST171",
+    "ATST999"
   ],
   "repeat_sec": 1.0,
-  "repeat_cnt": 0
+  "repeat_cnt": 0,
+  "font_size": 11,
+  "eol_mode": "none"
 }

@@ -1,0 +1,133 @@
+╔══════════════════════════════════════════════════════════════╗
+║        STM32F769I-Discovery Test System v0.2.0               ║
+║        Система тестирования STM32F769I-Discovery             ║
+╠══════════════════════════════════════════════════════════════╣
+║  ATS00 - ESP Weather Test                                    ║
+║  ATS01 - Display Graphics/Text Test                          ║
+║  ATS02 - LED Test                                            ║
+║  ATS03 - RTC Time Test                                       ║
+║  ATS04 - WiFi Connection Test                                ║
+║  ATS05 - NTP Time Sync Test                                  ║
+║  ATS06 - HTTP Request Test                                   ║
+║  ATS07 - Audio Codec Test                                    ║
+║  ATS08 - SDRAM Test                                          ║
+║  ATS09 - Touchscreen Test                                    ║
+║  ATS10 - Run All Tests                                       ║
+╠══════════════════════════════════════════════════════════════╣
+║  Display Mode Commands (ATS11-ATS20):                        ║
+║  ATS11 - Text Mode                                           ║
+║  ATS12 - Graphics Pattern Mode                               ║
+║  ATS13 - Color Bars Mode                                     ║
+║  ATS14 - Gradient Mode                                       ║
+║  ATS15 - Checkerboard (40x40)                                ║
+║  ATS16 - LTDC Info Display                                   ║
+║  ATS17 - Focus Pattern (convergence test)                    ║
+║  ATS18 - Display Modes Help                                  ║
+║  ATS19 - LCD Panel Detection Diagnostic                      ║        
+║  ATS20 - Checkerboard 50x50 (timing test)                    ║
+╠══════════════════════════════════════════════════════════════╣
+║  Drawing Commands (ATS21-ATS28):                             ║
+║  ATS21=X,Y,D,C - Draw Point                                  ║
+║  ATS22=X,Y,D,C - Draw Line                                   ║
+║  ATS23=X,Y,W,H,F,C - Draw Circle/Ellipse                     ║
+║  ATS24=X,Y,W,H,F,C - Draw Rectangle                          ║
+║  ATS25=X,Y,S,L,C,"TEXT" - Draw Text                          ║
+║  ATS26=X,Y,W,H,MI,MA,A,C - Draw Graph Axis                   ║
+║  ATS27=DATA - Draw Line Graph                                ║
+║  ATS28=DATA - Draw Bar Graph                                 ║
+╠══════════════════════════════════════════════════════════════╣
+║  Audio & Menu Demos (ATS29-ATS40):                           ║
+║  ATS29 - Drawing Commands Demo                               ║
+║  ATS30 - 4-Channel Audio Oscilloscope                        ║
+║  ATS31 - 4-Mic Audio with Sound Source Localization          ║
+║  ATS32 - 800Hz Frequency Detection                           ║
+║  ATS33 - 1200Hz Frequency Detection                          ║
+║  ATS34 - Menu Buttons Demo                                   ║
+║  ATS35 - Menu Progress Bar Demo                              ║
+║  ATS36 - Menu Sliders Demo                                   ║
+║  ATS37 - Menu List Item Demo                                 ║
+║  ATS38 - Menu Demonstration                                  ║
+║  ATS39 - Screen Clear                                        ║
+║  ATS40 - Audio Frequency Analysis                            ║
+╠══════════════════════════════════════════════════════════════╣
+║  SD Card & Optimized Draw ing (ATS41-ATS46):                 ║
+║  ATS41 - MicroSD Card Information                            ║
+║  ATS42 - MicroSD Card File List                              ║
+║  ATS43 - Fast Line Drawing Demo                              ║
+║  ATS44 - Fast Rectangle Drawing Demo                         ║
+║  ATS45 - Waveform Drawing Demo                               ║
+║  ATS46 - Fast Graph Drawing Demo                             ║
+╠══════════════════════════════════════════════════════════════╣
+║  Enhanced Audio System (ATS47-ATS55):                        ║
+║  ATS47 - Audio Recorder                                      ║
+║  ATS48 - Audio Playback                                      ║
+║  ATS49 - Audio Spectrum Analyzer                             ║
+║  ATS50 - Audio Waveform Recorder                             ║
+║  ATS51 - Audio VU Meter                                      ║
+║  ATS52 - Audio SPL Meter                                     ║
+║  ATS53 - Audio Frequency Counter                             ║
+║  ATS54 - Audio Tone Generator                                ║
+║  ATS55 - Audio Noise Generator                               ║
+╠══════════════════════════════════════════════════════════════╣
+║  Environmental Sensor BME280 (ATS56-ATS60):                  ║
+║  ATS56 - BME280 Test                                         ║
+║  ATS57 - BME280 Temperature Monitoring                       ║
+║  ATS58 - BME280 Humidity Monitoring                          ║
+║  ATS59 - BME280 Pressure Monitoring                          ║
+║  ATS60 - BME280 Weather Station                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  MPU9250 9-axis IMU Sensor (ATS61-ATS66):                    ║
+║  ATS61 - MPU9250 Test                                        ║
+║  ATS62 - MPU9250 Accelerometer                               ║
+║  ATS63 - MPU9250 Gyroscope                                   ║
+║  ATS64 - MPU9250 Magnetometer                                ║
+║  ATS65 - MPU9250 Orientation                                 ║
+║  ATS66 - MPU9250 Motion Detection                            ║
+╠══════════════════════════════════════════════════════════════╣
+║  LTC2500 External ADC (ATS67-ATS71):                         ║
+║  ATS67 - LTC2500 Test                                        ║
+║  ATS68 - LTC2500 Multi-channel Scan                          ║
+║  ATS69 - LTC2500 Continuous Sampling                         ║
+║  ATS70 - LTC2500 Calibrate                                   ║
+║  ATS71 - LTC2500 Logger                                      ║
+╠══════════════════════════════════════════════════════════════╣
+║  RV-3028 Real-Time Clock (ATS72-ATS77):                      ║
+║  ATS72 - RTC Test                                            ║
+║  ATS73 - RTC Clock                                           ║
+║  ATS74 - RTC Alarm                                           ║
+║  ATS75 - RTC Timer                                           ║
+║  ATS76 - RTC Set                                             ║
+║  ATS77 - RTC GPS Sync                                        ║
+╠══════════════════════════════════════════════════════════════╣
+║  ATGM336H GPS Module (ATS78-ATS84):                          ║
+║  ATS78 - GPS NMEA Test                                       ║
+║  ATS79 - GPS Position                                        ║
+║  ATS80 - GPS Time Sync                                       ║
+║  ATS81 - GPS Satellites                                      ║
+║  ATS82 - GPS Speed                                           ║
+║  ATS83 - GPS Logger                                          ║
+║  ATS84 - GPS Nav Dashboard                                   ║
+╠══════════════════════════════════════════════════════════════╣
+║  DS18B20 Temperature Sensor (ATS85-ATS88):                   ║
+║  ATS85 - DS18B20 Test                                        ║
+║  ATS86 - DS18B20 Monitor                                     ║
+║  ATS87 - DS18B20 Multi                                       ║
+║  ATS88 - DS18B20 Alarm                                       ║
+╠══════════════════════════════════════════════════════════════╣
+║  ESP32-C6 WiFi Module (ATS89-ATS95):                         ║
+║  ATS89 - ESP32-C6 Test                                       ║
+║  ATS90 - WebSocket                                           ║
+║  ATS91 - HTTP Request                                        ║
+║  ATS92 - MQTT                                                ║
+║  ATS93 - WiFi Scan                                           ║
+║  ATS94 - NTP Sync                                            ║
+║  ATS95 - OTA Update                                          ║
+╠══════════════════════════════════════════════════════════════╣
+║  Sensor Fusion Dashboard (ATS96):                            ║
+║  ATS96 - Environmental Dashboard                             ║
+╠══════════════════════════════════════════════════════════════╣
+║  Game & Special Commands:                                    ║
+║  ATS97 - PACMAN Game                                         ║
+║  ATS98 - Show This Help                                      ║
+║  ATS99 - Interrupt/stop any running test.                    ║
+╚══════════════════════════════════════════════════════════════╝

@@ -24,8 +24,8 @@ A powerful yet very lightweight terminal for engineers. Specially tuned for dail
 | Key           | Action                                           |
 |---------------|--------------------------------------------------|
 | **Ctrl + X**  | Quit program                                     |
-| **Ctrl + C**  | Clear terminal and buffer                        |
-| **Ctrl + S**  | Save log (`YYYY-MM-DD_HH-MM-SS_term.txt`)        |
+| **Ctrl + B**  | Clear terminal and buffer                        |
+| **Ctrl + C**  | Copy selected text to clipboard                  |
 |               | automatically copies it to the system clipboard. |
 | **Ctrl + F**  | Save default profile                             |
 | **Ctrl + H**  | Show this help                                   |
@@ -42,17 +42,91 @@ any editor, chat, notes, etc.
 
 ## Installation & Run
 
+### Quick Start (macOS)
+
 ```bash
+# Clone repository
 git clone https://github.com/your-username/usbs-serial-ide.git
 cd usbs-serial-ide
-pip install -r requirements.txt
-python usbs_term.py
 
-## Dependencies
+# Install dependencies
+pip install pyserial
 
-- Python 3.8+
-- pyserial (`pip install pyserial`)
+# Run using system Python (recommended)
+./my_term.py
+# or
+/usr/bin/python3 my_term.py
+```
 
-tkinter is usually already installed with Python.
+### Alternative: Using pyenv
 
-If not, install the `python3-tk` / `python-tk` package (Linux) or `python-tk` via brew (macOS).
+If you use pyenv and encounter `ModuleNotFoundError: No module named '_tkinter'`:
+
+```bash
+# Install Tcl/Tk via Homebrew
+brew install tcl-tk
+
+# Reinstall Python with Tkinter support
+PYTHON_CONFIGURE_OPTS="--with-tcltk-includes='-I$(brew --prefix tcl-tk)/include' --with-tcltk-libs='-L$(brew --prefix tcl-tk)/lib'" \
+pyenv install 3.14.0
+
+# Set local version
+pyenv local 3.14.0
+
+# Install dependencies
+pip install pyserial
+
+# Run
+./my_term.py
+```
+
+### Linux
+
+```bash
+# Install system dependencies
+sudo apt-get install python3-tk  # Debian/Ubuntu
+# or
+sudo dnf install python3-tkinter  # Fedora
+
+# Install Python dependencies
+pip install pyserial
+
+# Run
+python3 my_term.py
+```
+
+## Requirements
+
+- **Python**: 3.8+ (3.14+ recommended)
+- **pyserial**: `pip install pyserial`
+- **tkinter**: Usually included with Python
+
+## Troubleshooting
+
+### `ModuleNotFoundError: No module named '_tkinter'`
+
+This error occurs when Python was compiled without Tkinter support (common with pyenv on macOS).
+
+**Solution 1**: Use system Python (recommended):
+```bash
+/usr/bin/python3 my_term.py
+```
+
+**Solution 2**: Reinstall Python with Tkinter support (see "Alternative: Using pyenv" above).
+
+### `ModuleNotFoundError: No module named 'serial'`
+
+Install pyserial:
+```bash
+pip install pyserial
+```
+
+### Permission denied on `/dev/tty.usb*`
+
+On macOS, you may need to add your user to the `dialout` group or use `sudo` (not recommended).
+
+On Linux:
+```bash
+sudo usermod -a -G dialout $USER
+# Log out and log back in
+```

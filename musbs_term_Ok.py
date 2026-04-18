@@ -92,7 +92,7 @@ class App:
         self.last_cmd = ""
         self.repeat_after = None
         self.help_shown = False
-        self.font_size = 7  # default font size
+        self.font_size = 11  # default font size
         self.eol_mode = cfg.get("eol_mode", "none")  # 'none', 'add_n', 'add_rn'
 
         self.backend = SerialBackend(cfg, self.on_rx, self.set_status, root)
@@ -453,7 +453,7 @@ Click HEX → copy to clipboard"""
         self.commands = data.get("commands", [""] * LINES_COUNT)
         self.repeat_sec.set(data.get("repeat_sec", 1.0))
         self.repeat_cnt.set(data.get("repeat_cnt", 0))
-        self.font_size = data.get("font_size", 7)
+        self.font_size = data.get("font_size", 11)
         self.eol_mode = data.get("eol_mode", "none")
         self.log.config(font=("Menlo", self.font_size))
         self.log.delete("1.0", "end")

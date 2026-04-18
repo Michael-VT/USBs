@@ -1,3 +1,4 @@
+#!/Users/mich/.espressif/python_env/idf5.3_py3.14_env/bin/python3
 import asyncio
 import json
 import os
