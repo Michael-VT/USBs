@@ -20,8 +20,13 @@ from typing import Optional, Callable, Any
 # Check Python version
 if sys.version_info < (3, 8):
     print("Error: Python 3.8+ required", file=sys.stderr)
-    sys.exit(1)
-
+# Detect platform
+IS_TERMUX = 'com.termux' in os.environ.get('PREFIX', '')
+IS_ANDROID = IS_TERMUX or 'ANDROID_ROOT' in os.environ
+IS_LINUX = sys.platform.startswith('linux') and not IS_ANDROID
+IS_MACOS = sys.platform == 'darwin'
+IS_WINDOWS = sys.platform.startswith('win')
+ 
 # Check tkinter availability
 try:
     import tkinter as tk
@@ -29,10 +34,20 @@ try:
 except ImportError as e:
     print(f"Error: tkinter not available: {e}", file=sys.stderr)
     print("\nTo fix this:", file=sys.stderr)
-    print("  Option 1: Use system Python: /usr/bin/python3 my_term.py", file=sys.stderr)
-    print("  Option 2: Install tcl-tk and reinstall Python:", file=sys.stderr)
-    print("    brew install tcl-tk", file=sys.stderr)
-    print("    PYTHON_CONFIGURE_OPTS=\"--with-tcltk-includes='-I$(brew --prefix tcl-tk)/include' --with-tcltk-libs='-L$(brew --prefix tcl-tk)/lib'\" pyenv install 3.14.0", file=sys.stderr)
+    if IS_TERMUX:
+        print("  pkg install python-tk", file=sys.stderr)
+    elif IS_MACOS:
+        print("  Option 1: Use system Python: /usr/bin/python3 my_term.py", file=sys.stderr)
+        print("  Option 2: Install tcl-tk and reinstall Python:", file=sys.stderr)
+        print("    brew install tcl-tk", file=sys.stderr)
+        print("    PYTHON_CONFIGURE_OPTS='--with-tcltk-includes=-I$(brew --prefix tcl-tk)/include --with-tcltk-libs=-L$(brew --prefix tcl-tk)/lib' pyenv install 3.14.0", file=sys.stderr)
+    elif IS_LINUX:
+        print("  sudo apt-get install python3-tk  # Debian/Ubuntu", file=sys.stderr)
+        print("  sudo dnf install python3-tkinter  # Fedora", file=sys.stderr)
+    elif IS_WINDOWS:
+        print("  tkinter should be included with Python on Windows", file=sys.stderr)
+    else:
+        print("  Install python-tk for your platform", file=sys.stderr)
     sys.exit(1)
 
 # Check pyserial availability
@@ -646,9 +661,25 @@ Ctrl+Alt+S Settings
 Ctrl+Alt+R Start Sequence
 Ctrl+Alt+X Stop Sequence
 
-Click line → send + copy to entry
-Double click → edit
-Click HEX → copy to clipboard"""
+🖱️ MOUSE ACTIONS:
+Click Select column (☐/☑) → Toggle selection
+Click Command/#/Status → Send command
+Right click → Context menu (Toggle Selection, Edit, Add, Insert, Delete)
+Double click → Edit command
+
+⚡ SELECT & RUN:
+Select column: ☐ = unselected, ☑ = selected
+Select All / Deselect All buttons
+Run Selected Commands → Execute only selected commands
+Selected: X/40 counter shows selection status
+
+📋 PROFILES:
+Save profile → Save to current profile
+Load profile → Load from current profile
+Ctrl+P → Quick save to default profile
+
+💡 PLATFORM SUPPORT:
+macOS / Linux / Termux(Android) / Windows"""
         self.log.insert("end", text)
         self.help_shown = True
     
@@ -1228,20 +1259,7 @@ Click HEX → copy to clipboard"""
             return
         
         iid = selection[0]
-        try:
-            idx = int(iid)
-        except ValueError:
-            return
-        
-        # Toggle selection state
-        # Toggle selection state
-        if idx in self.selected_commands:
-            self.selected_commands.remove(idx)
-            selected = "☐"
-        else:
-            self.selected_commands.add(idx)
-            selected = "☑"
-        
+
         # Update the checkbox display
         values = self.listbox.item(iid, 'values')
         self.listbox.item(iid, values=(selected, values[1], values[2], values[3]))
@@ -1263,6 +1281,30 @@ Click HEX → copy to clipboard"""
         except ValueError:
             return
         
+    def select_all_commands(self) -> None:
+        """Select all commands."""
+        for i in range(len(self.commands)):
+            self.selected_commands.add(i)
+            iid = str(i)
+            self.listbox.item(iid, values=("☑", i+1, self.commands[i], ""))
+            self.listbox.item(iid, tags=('selected',))
+        self._update_selected_count()
+    
+    def deselect_all_commands(self) -> None:
+        """Deselect all commands."""
+        for i in range(len(self.commands)):
+            if i in self.selected_commands:
+                self.selected_commands.remove(i)
+            iid = str(i)
+            self.listbox.item(iid, values=("☐", i+1, self.commands[i], ""))
+            self.listbox.item(iid, tags=())
+        self._update_selected_count()
+    
+    def _update_selected_count(self) -> None:
+        """Update the selected commands counter."""
+        count = len(self.selected_commands)
+        total = len(self.commands)
+        self.selected_count_label.config(text=f"Selected: {count}/{total}")
         old = self.commands[idx]
         new = simpledialog.askstring("Edit Command", f"Edit command {idx+1}:", initialvalue=old)
         if new is not None:
