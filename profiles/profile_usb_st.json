@@ -2,6 +2,8 @@
   "port": "/dev/cu.usbmodem3657395133351",
   "baud": 115200,
   "theme": "dark",
+  "filter_empty_lines": true,
+  "normalize_line_endings": true,
   "commands": [
     "AT",
     "ATVER",
@@ -62,6 +64,7 @@
     "ATS51",
     "ATS52",
     "ATS53",
+    "ATS53=SIM",
     "ATS54",
     "ATS55",
     "ATS56",
@@ -108,6 +111,9 @@
     "ATS97",
     "ATS98",
     "ATS99",
+    "ATS41",
+    "ATS42",
+    "ATS100",
     "ATS140",
     "ATS141",
     "ATS142",
@@ -141,10 +147,29 @@
     "ATS170",
     "ATS170=M",
     "ATS171",
-    "ATS999"
+    "ATS999",
+    "ATVER",
+    "ATS01",
+    "ATS08",
+    "ATS49",
+    "ATS49=1",
+    "ATS49=2",
+    "ATS49=4",
+    "ATS49=SIM",
+    "ATS50",
+    "ATS51",
+    "ATS52",
+    "ATS52=SIM",
+    "ATS53", 
+    "ATS53=SIM",
+    "ATS97"
   ],
   "repeat_sec": 1.0,
   "repeat_cnt": 0,
-  "font_size": 11,
-  "eol_mode": "none"
+  "font_size": 7,
+  "eol_mode": "none",
+  "cmd_history": [
+    "ATS53",
+    "ATS54"
+  ]
 }

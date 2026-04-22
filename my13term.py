@@ -227,9 +227,9 @@ class App:
         """Build the user interface."""
         from datetime import datetime
         working_dir = os.getcwd()
-    creation_date = "2026-04-21"
-    port_info = self.cfg.get('port', 'VIRTUAL')
-    title = f"Serial IDE v07 ({creation_date}) | Port: {port_info} | Dir: {working_dir}"
+        creation_date = "2026-04-21"
+        port_info = self.cfg.get('port', 'VIRTUAL')
+        title = f"Serial IDE v07 ({creation_date}) | Port: {port_info} | Dir: {working_dir}"
         self.root.title(title)
         self.root.geometry("1200x720")
         

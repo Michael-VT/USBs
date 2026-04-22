@@ -196,7 +196,8 @@ class App:
         self.line_counter = 0
         
         # Execution engine
-        self.exec_mode: Optional[str] = None  # 'seq', 'repeat', 'range'
+        self.exec_mode: Optional[str] = None  # 'seq', 'repeat', 'range', 'selected'
+        self.last_executed_real_idx = None  # Real index of last executed command (for 'selected' mode)
         self.exec_state = "IDLE"  # 'IDLE', 'WAIT_START', 'WAIT_COMPLETE'
         self.exec_timeout_id: Optional[str] = None
         self.exec_start_time: Optional[datetime] = None
@@ -204,6 +205,7 @@ class App:
         self.seq_current = 0
         self.seq_end = 0
         self.command_status = {}  # Store status for each command: ✓ success, ✗ failed
+        self.selected_commands = set()  # Store indices of selected commands for Run Selected
         
         # Stats
         self.stats = {
@@ -227,9 +229,9 @@ class App:
         """Build the user interface."""
         from datetime import datetime
         working_dir = os.getcwd()
-    creation_date = "2026-04-21"
-    port_info = self.cfg.get('port', 'VIRTUAL')
-    title = f"Serial IDE v07 ({creation_date}) | Port: {port_info} | Dir: {working_dir}"
+        creation_date = "2026-04-21"
+        port_info = self.cfg.get('port', 'VIRTUAL')
+        title = f"Serial IDE v08 ({creation_date}) | Port: {port_info} | Dir: {working_dir}"
         self.root.title(title)
         self.root.geometry("1200x720")
         
@@ -383,23 +385,45 @@ class App:
 
         ttk.Button(range_frame, text="Run Range", command=self.run_range).grid(row=2, column=0, columnspan=2, pady=5)
         
-        self.listbox = ttk.Treeview(right, columns=("#", "Command", "Status"), show="headings", height=20)
+        # Run Selected frame
+        selected_frame = ttk.LabelFrame(right, text="Run Selected")
+        selected_frame.pack(fill="x", pady=4, padx=4)
+        ttk.Button(selected_frame, text="Run Selected Commands", command=self.run_selected).pack(fill="x", padx=5, pady=5)
+        # Selection controls frame
+        select_ctrl_frame = ttk.Frame(selected_frame)
+        select_ctrl_frame.pack(fill="x", padx=5, pady=2)
+        ttk.Button(select_ctrl_frame, text="☐ Select All", command=self.select_all_commands).pack(side="left", padx=2)
+        ttk.Button(select_ctrl_frame, text="☑ Deselect All", command=self.deselect_all_commands).pack(side="left", padx=2)
+        # Selected commands counter
+        self.selected_count_label = ttk.Label(select_ctrl_frame, text="Selected: 0/40")
+        self.selected_count_label.pack(side="right", padx=5)
+
+        
+        self.listbox = ttk.Treeview(right, columns=("Select", "#", "Command", "Status"), show="headings", height=20)
+        self.listbox.heading("Select", text="Select")
         self.listbox.heading("#", text="#")
         self.listbox.heading("Command", text="Command")
         self.listbox.heading("Status", text="Status")
+        self.listbox.column("Select", width=60, anchor="center")
         self.listbox.column("#", width=40, anchor="center")
-        self.listbox.column("Command", width=300)
+        self.listbox.column("Command", width=280)
         self.listbox.column("Status", width=60, anchor="center")
         self.listbox.pack(fill="both", expand=True)
         
         for i, cmd in enumerate(self.commands):
-            self.listbox.insert("", "end", iid=str(i), values=(i+1, cmd, ""))
+            selected = "☑" if i in self.selected_commands else "☐"
+            self.listbox.insert("", "end", iid=str(i), values=(selected, i+1, cmd, ""))
         
+        # Configure tags for visual feedback
+        self.listbox.tag_configure('selected', background='#3a3a3a')  # Darker background for selected rows
         self.listbox.bind("<Button-1>", self.on_list_click)
         self.listbox.bind("<Double-Button-1>", self.edit_cmd)
         
         # Create context menu for right-click
+        # Create context menu for right-click
         self.context_menu = tk.Menu(self.root, tearoff=0)
+        self.context_menu.add_command(label="Toggle Selection", command=self.toggle_selection)
+        self.context_menu.add_separator()
         self.context_menu.add_command(label="Edit Command", command=self.edit_selected)
         self.context_menu.add_command(label="Add New Command", command=self.add_new_command)
         self.context_menu.add_command(label="Insert Before", command=self.insert_before)
@@ -809,23 +833,43 @@ Click HEX → copy to clipboard"""
         cmd = None
         
         # Find next command based on mode
-        if self.exec_mode in ['seq', 'range']:
-            # Sequential or range mode
-            while self.seq_current < self.seq_end:
-                cmd = self.commands[self.seq_current].strip()
-                self.seq_current += 1
-                if cmd:
-                    break
-            else:
-                # No more commands
-                self._stop_execution()
-                self.seq_status.config(text="Sequence complete")
-                self.set_status("sequence complete")
-                # Auto-save log for range mode
-                if self.exec_mode == 'range':
+        if self.exec_mode in ['seq', 'range', 'selected']:
+            # Sequential, range, or selected mode
+            if self.exec_mode == 'selected':
+                # Get actual command index from selected list
+                while self.seq_current < self.seq_end:
+                    real_idx = self.seq_selected_indices[self.seq_current]
+                    cmd = self.commands[real_idx].strip()
+                    self.seq_current += 1
+                    if cmd:
+                        self.last_executed_real_idx = real_idx  # Save for status updates
+                        break
+                else:
+                    # No more selected commands
+                    self._stop_execution()
+                    self.seq_status.config(text="Selected commands complete")
+                    self.set_status("selected commands complete")
+                    # Auto-save log for selected mode
                     self.save_log_auto()
-                    self.log.insert("end", "\n📁 Log auto-saved after range completion\n")
-                return
+                    self.log.insert("end", "\n📁 Log auto-saved after selected completion\n")
+                    return
+            else:
+                # Original seq or range mode
+                while self.seq_current < self.seq_end:
+                    cmd = self.commands[self.seq_current].strip()
+                    self.seq_current += 1
+                    if cmd:
+                        break
+                else:
+                    # No more commands
+                    self._stop_execution()
+                    self.seq_status.config(text="Sequence complete")
+                    self.set_status("sequence complete")
+                    # Auto-save log for range mode
+                    if self.exec_mode == 'range':
+                        self.save_log_auto()
+                        self.log.insert("end", "\n📁 Log auto-saved after range completion\n")
+                    return
         
         elif self.exec_mode == 'repeat':
             # Repeat mode
@@ -892,16 +936,21 @@ Click HEX → copy to clipboard"""
             return
 
         self.stats["failed"] += 1
-        cmd_num = getattr(self, 'seq_current', '?')
+        # Get command index for status update
+        if self.exec_mode == 'selected' and self.last_executed_real_idx is not None:
+            cmd_index = self.last_executed_real_idx
+            cmd_num = cmd_index + 1
+        else:
+            cmd_num = getattr(self, 'seq_current', '?')
+            cmd_index = cmd_num - 1  # Convert to 0-based index
         log_msg = f"⚠️ TIMEOUT: Command #{cmd_num} - no 'Complete' within {self.seq_timeout}s, proceeding to next\n"
         self.log.insert("end", log_msg)
         self.log.see("end")
         # Update status in Treeview with red X
-        cmd_index = cmd_num - 1  # Convert to 0-based index
         self._update_command_status(cmd_index, '✗')
 
         # Move to next command despite timeout
-        if self.exec_mode in ['seq', 'range']:
+        if self.exec_mode in ['seq', 'range', 'selected']:
             self.root.after(int(self.seq_delay * 1000), self._exec_next)
         elif self.exec_mode == 'repeat':
             self.root.after(int(self.seq_delay * 1000), self._exec_next)
@@ -914,12 +963,17 @@ Click HEX → copy to clipboard"""
         # Log successful completion
         if self.last_cmd_time:
             delta = (datetime.now() - self.last_cmd_time).total_seconds()
-            cmd_num = getattr(self, 'seq_current', '?')
+            # Get command index for status update
+            if self.exec_mode == 'selected' and self.last_executed_real_idx is not None:
+                cmd_index = self.last_executed_real_idx
+                cmd_num = cmd_index + 1
+            else:
+                cmd_num = getattr(self, 'seq_current', '?')
+                cmd_index = cmd_num - 1  # Convert to 0-based index
             log_msg = f"✓ SUCCESS: Command #{cmd_num} completed in {delta:.2f}s\n"
             self.log.insert("end", log_msg)
             self.log.see("end")
             # Update status in Treeview with green checkmark
-            cmd_index = cmd_num - 1  # Convert to 0-based index
             self._update_command_status(cmd_index, '✓')
         if self.exec_timeout_id:
             try:
@@ -973,6 +1027,39 @@ Click HEX → copy to clipboard"""
         self.seq_status.config(text=f"Running range: {start+1} to {end}")
         self.set_status(f"Running range: {start+1} to {end}")
         self._exec_next()
+    def run_selected(self) -> None:
+        """Run only selected commands."""
+        if not self.selected_commands:
+            messagebox.showwarning("No Selection", "Please select commands by clicking the Select column")
+            return
+        
+        self.seq_pattern = self.seq_pattern_entry.get().strip()
+        if not self.seq_pattern:
+            messagebox.showwarning("Pattern Required", "Please enter a completion pattern")
+            return
+        
+        # Load timing settings from UI
+        self.seq_delay = self.seq_delay_var.get()
+        self.seq_timeout = self.seq_timeout_var.get()
+        
+        # Get sorted list of selected indices
+        self.seq_selected_indices = sorted(self.selected_commands)
+        
+        # Clear log and initialize selected execution
+        self.clear()
+        self.line_counter = 0
+        
+        # Initialize execution for selected mode
+        self.exec_mode = 'selected'
+        self.exec_state = 'WAIT_START'
+        self.seq_current = 0  # Index in seq_selected_indices
+        self.seq_end = len(self.seq_selected_indices)
+        first_idx = self.seq_selected_indices[0] + 1
+        last_idx = self.seq_selected_indices[-1] + 1
+        self.seq_status.config(text=f"Running selected: {len(self.seq_selected_indices)} commands ({first_idx}-{last_idx})")
+        self.set_status(f"Running selected commands: {len(self.seq_selected_indices)} total")
+        self._exec_next()
+
 
     def show_statistics(self) -> None:
         """Show command execution statistics."""
@@ -1079,13 +1166,38 @@ Click HEX → copy to clipboard"""
 
     
     def on_list_click(self, event: tk.Event) -> None:
-        """Handle treeview click - send command on single click."""
+        """Handle treeview click - toggle checkbox or send command."""
         # Get the item under the cursor
         item_id = self.listbox.identify_row(event.y)
         if not item_id:
             return
         
-        # Get the command index from item_id
+        # Check which column was clicked
+        # Check which column was clicked
+        col_id = self.listbox.identify_column(event.x)
+        # Column #1 is 'Select', #2 is '#', #3 is 'Command', #4 is 'Status'
+        if col_id == "#1":  # Select column (first column)
+            try:
+                idx = int(item_id)
+                if idx in self.selected_commands:
+                    self.selected_commands.remove(idx)
+                    selected = "☐"
+                else:
+                    self.selected_commands.add(idx)
+                    selected = "☑"
+                # Update the checkbox display
+                values = self.listbox.item(item_id, 'values')
+                self.listbox.item(item_id, values=(selected, values[1], values[2], values[3]))
+                # Update row appearance - add/remove tag for selected rows
+                if idx in self.selected_commands:
+                    self.listbox.item(item_id, tags=('selected',))
+                else:
+                    self.listbox.item(item_id, tags=())
+            except (ValueError, IndexError):
+                pass
+            return  # Don't send command when clicking checkbox
+        
+        # For other columns, send command as before
         try:
             idx = int(item_id)
             txt = self.commands[idx].strip()
@@ -1107,6 +1219,38 @@ Click HEX → copy to clipboard"""
                     self.cfg["cmd_history"].append(txt)
         except (ValueError, IndexError):
             pass
+            pass
+    def toggle_selection(self) -> None:
+        """Toggle selection state of the currently selected command."""
+        selection = self.listbox.selection()
+        if not selection:
+            messagebox.showwarning("No Selection", "Please select a command first")
+            return
+        
+        iid = selection[0]
+        try:
+            idx = int(iid)
+        except ValueError:
+            return
+        
+        # Toggle selection state
+        # Toggle selection state
+        if idx in self.selected_commands:
+            self.selected_commands.remove(idx)
+            selected = "☐"
+        else:
+            self.selected_commands.add(idx)
+            selected = "☑"
+        
+        # Update the checkbox display
+        values = self.listbox.item(iid, 'values')
+        self.listbox.item(iid, values=(selected, values[1], values[2], values[3]))
+        # Update row appearance and counter
+        if idx in self.selected_commands:
+            self.listbox.item(iid, tags=('selected',))
+        else:
+            self.listbox.item(iid, tags=())
+        self._update_selected_count()
     def edit_cmd(self, event: tk.Event) -> None:
         """Edit command in Treeview."""
         selection = self.listbox.selection()
