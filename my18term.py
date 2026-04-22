@@ -269,7 +269,7 @@ class App:
         for t in THEMES:
             theme_menu.add_command(
                 label=t,
-                command=lambda name=t: self.set_theme(name)
+                command=lambda theme=t: self.set_theme(theme)
             )
         menubar.add_cascade(label="Theme", menu=theme_menu)
         
@@ -1176,11 +1176,16 @@ macOS / Linux / Termux(Android) / Windows"""
             self.set_status(f"Export failed: {e}")
 
     def toggle_repeat(self) -> None:
-        """Toggle command repeat."""
-        if self.exec_mode == 'repeat':
+        """Toggle command repeat without waiting for completion."""
+        if hasattr(self, 'repeat_after_id') and self.repeat_after_id:
             # Stop repeat
-            self._stop_execution()
+            try:
+                self.root.after_cancel(self.repeat_after_id)
+            except Exception:
+                pass
+            self.repeat_after_id = None
             self.btn_repeat.config(text="Start repeat")
+            self.set_status("Repeat stopped")
             return
         
         # Start repeat
@@ -1188,18 +1193,51 @@ macOS / Linux / Termux(Android) / Windows"""
             messagebox.showwarning("No Command", "Please send a command first")
             return
         
-        # Load timing settings from UI
-        self.seq_delay = self.seq_delay_var.get()
-        self.seq_timeout = self.seq_timeout_var.get()
+        sec = self.repeat_sec.get()
+        if sec <= 0:
+            messagebox.showwarning("Invalid Time", "Please enter a positive repeat interval")
+            return
         
-        # Initialize repeat execution
-        self.exec_mode = 'repeat'
-        self.exec_state = 'WAIT_START'
-        self.repeat_current = 0
+        repeat_limit = self.repeat_cnt.get()
+        if repeat_limit > 0:
+            self.set_status(f"Repeating {self.last_cmd} ({repeat_limit}x every {sec}s)")
+        else:
+            self.set_status(f"Repeating {self.last_cmd} (infinite every {sec}s)")
+        
         self.btn_repeat.config(text="Stop repeat")
-        self.seq_status.config(text="Starting repeat...")
-        self._exec_next()
-
+        self._schedule_next_repeat()
+    def _schedule_next_repeat(self) -> None:
+        """Schedule and execute next command repeat."""
+        # Check repeat limit
+        repeat_limit = self.repeat_cnt.get()
+        if repeat_limit > 0:
+            # Increment counter (stored as attribute to track across calls)
+            if not hasattr(self, '_repeat_counter'):
+                self._repeat_counter = 0
+            self._repeat_counter += 1
+            if self._repeat_counter > repeat_limit:
+                # Limit reached, stop repeating
+                self.btn_repeat.config(text="Start repeat")
+                self.set_status(f"Repeat complete: {repeat_limit}x")
+                delattr(self, '_repeat_counter')
+                self.repeat_after_id = None
+                return
+        
+        # Send the command
+        if self.last_cmd:
+            self.entry.delete(0, "end")
+            self.entry.insert(0, self.last_cmd)
+            self.backend.write((self.last_cmd + "\r").encode())
+            line = f">> {self.last_cmd} (repeat)\n"
+            self.log_buffer.append(line)
+            self.log.insert("end", line)
+            self.log.see("end")
+            self.stats["total_sent"] += 1
+        
+        # Schedule next repeat
+        sec = self.repeat_sec.get()
+        delay_ms = int(sec * 1000)
+        self.repeat_after_id = self.root.after(delay_ms, self._schedule_next_repeat)
     
     def on_list_click(self, event: tk.Event) -> None:
         """Handle treeview click - toggle checkbox or send command."""
