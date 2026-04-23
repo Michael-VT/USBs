@@ -33,7 +33,7 @@ self.listbox.item(str(cmd_index), values=(selected, cmd_index+1, self.commands[c
 4. Maintains selected_commands set integrity
 
 **Files Changed**:
-- `my23term.py`: Fixed `_update_command_status()` method (lines 836-854)
+- `myterm.py`: Fixed `_update_command_status()` method (lines 836-854)
 
 ### 🎨 Visual Improvements
 
@@ -134,7 +134,7 @@ values=(selected, cmd_index+1, command, status)
 **Breaking Changes**: None (backward compatible)
 
 **Recommended Actions**:
-1. Replace `my22term.py` with `my23term.py`
+1. Replace `myterm.py` with `myterm.py`
 2. Test command selection and execution
 3. Verify Select column persists after status updates
 4. Check visual appearance on your theme
@@ -155,7 +155,7 @@ Before deploying v23:
 ### 🚀 Deployment
 
 **Files to Deploy**:
-- `my23term.py` (main script)
+- `myterm.py` (main script)
 - `README.md` (documentation)
 - `CHANGELOG.md` (this file)
 
@@ -166,9 +166,9 @@ cp my22term.py my22term_backup.py
 
 **Upgrade**:
 ```bash
-# Download my23term.py
-chmod +x my23term.py
-./my23term.py
+# Download myterm.py
+chmod +x myterm.py
+./myterm.py
 ```
 
 ---
@@ -194,4 +194,4 @@ chmod +x my23term.py
 **For latest version and updates**, check the GitHub repository.
 
 **Last Updated**: 2026-04-21
-**Current Version**: v08 (my23term.py)
+**Current Version**: v08 (myterm.py)

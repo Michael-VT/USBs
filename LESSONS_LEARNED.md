@@ -447,7 +447,7 @@ Verify on multiple platforms and themes.
 ---
 
 **Last Updated**: 2026-04-21  
-**Version**: v08 (my23term.py)  
+**Version**: v08 (myterm.py)  
 **Critical Bug Fixed**: Select column preservation in Treeview updates
 
 Remember: **The bug you fixed today is the lesson you avoid tomorrow.**

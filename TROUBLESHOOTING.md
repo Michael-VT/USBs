@@ -7,7 +7,7 @@ Common problems and solutions for Serial IDE v08.
 ### Issue: Select Column Disappears After Execution
 
 **Versions Affected**: v01-v22  
-**Fixed In**: v23 (my23term.py)
+**Fixed In**: v23 (myterm.py)
 
 **Symptoms**:
 - After running tests, Select checkbox column vanishes
@@ -19,7 +19,7 @@ Common problems and solutions for Serial IDE v08.
 `_update_command_status()` method used 3-column format instead of 4-column format.
 
 **Solution**:
-Upgrade to `my23term.py` (v08) where this is fixed.
+Upgrade to `myterm.py` (v08) where this is fixed.
 
 **Technical Details**:
 ```python
@@ -47,7 +47,7 @@ Error: tkinter not available: No module named 'tkinter'
 #### macOS
 ```bash
 # Option 1: Use system Python
-/usr/bin/python3 my23term.py
+/usr/bin/python3 myterm.py
 
 # Option 2: Install via Homebrew
 brew install python-tk
@@ -216,7 +216,7 @@ Themes are optimized with:
 
 **Cause**: Old version (v01-v22)
 
-**Solution**: Upgrade to `my23term.py` (v23) with improved colors.
+**Solution**: Upgrade to `myterm.py` (v23) with improved colors.
 
 ---
 
@@ -265,7 +265,7 @@ python3 -m json.tool profiles/your_profile.json
 - Click "Repeat" but only executes once
 - Waits for response between repeats
 
-**Solution**: Upgrade to `my23term.py` (v23) where repeat works without waiting.
+**Solution**: Upgrade to `myterm.py` (v23) where repeat works without waiting.
 
 **Technical Detail**: v07+ uses `_schedule_next_repeat()` instead of waiting for pattern match.
 
@@ -365,7 +365,7 @@ pkg install pyserial
 
 ### Enable Debug Logging
 
-Add to `my23term.py`:
+Add to `myterm.py`:
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -426,7 +426,7 @@ python3 -c "import serial.tools.list_ports; print([p.device for p in serial.tool
 python3 -m json.tool profiles/profile_name.json
 
 # Test syntax
-python3 -m py_compile my23term.py
+python3 -m py_compile myterm.py
 ```
 
 ---
@@ -435,18 +435,18 @@ python3 -m py_compile my23term.py
 
 | Problem | Quick Fix |
 |---------|-----------|
-| Select column disappears | Upgrade to my23term.py (v23) |
+| Select column disappears | Upgrade to myterm.py (v23) |
 | tkinter not available | Install python-tk for your platform |
 | Port busy | Close other programs using port |
 | Commands not executing | Check connection, try VIRTUAL mode |
 | Pattern timeout | Increase seq_timeout in config |
 | Poor readability | Change Theme or upgrade to v23 |
 | Profile not saving | Create ./profiles/ directory |
-| Repeat not working | Upgrade to my23term.py (v23) |
+| Repeat not working | Upgrade to myterm.py (v23) |
 
 ---
 
 **Last Updated**: 2026-04-21  
-**Version**: v08 (my23term.py)
+**Version**: v08 (myterm.py)
 
 For version history, see [CHANGELOG.md](CHANGELOG.md).

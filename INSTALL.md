@@ -32,11 +32,11 @@ python3 --version
 # Install pyserial
 pip3 install pyserial
 
-# Download my23term.py
-chmod +x my23term.py
+# Download myterm.py
+chmod +x myterm.py
 
 # Run
-./my23term.py
+./myterm.py
 ```
 
 ### Option 2: Homebrew Python
@@ -49,7 +49,7 @@ brew install python-tk
 pip3 install pyserial
 
 # Run
-./my23term.py
+./myterm.py
 ```
 
 ### Option 3: pyenv
@@ -65,7 +65,7 @@ PYTHON_CONFIGURE_OPTS='--with-tcltk-includes=-I$(brew --prefix tcl-tk)/include -
 pip install pyserial
 
 # Run
-./my23term.py
+./myterm.py
 ```
 
 ---
@@ -86,8 +86,8 @@ pip3 install pyserial
 sudo apt-get install python3-serial
 
 # Download and run
-chmod +x my23term.py
-./my23term.py
+chmod +x myterm.py
+./myterm.py
 ```
 
 ### Fedora/RHEL/CentOS
@@ -103,8 +103,8 @@ pip3 install pyserial
 sudo dnf install python3-pyserial
 
 # Download and run
-chmod +x my23term.py
-./my23term.py
+chmod +x myterm.py
+./myterm.py
 ```
 
 ### Arch Linux
@@ -120,8 +120,8 @@ pip install pyserial
 sudo pacman -S python-pyserial
 
 # Download and run
-chmod +x my23term.py
-./my23term.py
+chmod +x myterm.py
+./myterm.py
 ```
 
 ### Serial Port Permissions (Linux)
@@ -133,7 +133,7 @@ sudo usermod -a -G dialout $USER
 # Log out and log back in for changes to take effect
 
 # Or use sudo for temporary access
-sudo ./my23term.py
+sudo ./myterm.py
 ```
 
 ---
@@ -158,10 +158,10 @@ pip install pyserial
 cd path\to\USBs
 
 # Run
-python my23term.py
+python myterm.py
 
 # Or if in PATH
-my23term.py
+myterm.py
 ```
 
 ### Option 2: Microsoft Store
@@ -174,7 +174,7 @@ my23term.py
 pip install pyserial
 
 # Run
-python my23term.py
+python myterm.py
 ```
 
 ### Serial Drivers (Windows)
@@ -209,14 +209,14 @@ pkg install python-tk
 # Install pyserial
 pip install pyserial
 
-# Download my23term.py (use wget or curl)
-wget https://raw.githubusercontent.com/yourusername/USBs/main/my23term.py
+# Download myterm.py (use wget or curl)
+wget https://raw.githubusercontent.com/yourusername/USBs/main/myterm.py
 
 # Make executable
-chmod +x my23term.py
+chmod +x myterm.py
 
 # Run
-./my23term.py
+./myterm.py
 ```
 
 ### Note on Serial Ports in Termux
@@ -227,7 +227,7 @@ Termux needs root access for direct serial port access:
 su
 
 # Run with root
-./my23term.py
+./myterm.py
 ```
 
 Or use **VIRTUAL** mode for testing without hardware.
@@ -264,14 +264,14 @@ python3 -c "import serial.tools.list_ports; print([p.device for p in serial.tool
 # Should show list of available ports
 ```
 
-### Test my23term.py
+### Test myterm.py
 
 ```bash
 # Syntax check
-python3 -m py_compile my23term.py
+python3 -m py_compile myterm.py
 
 # Run (should open window)
-./my23term.py
+./myterm.py
 ```
 
 ---
@@ -281,14 +281,14 @@ python3 -m py_compile my23term.py
 ### Method 1: Direct Download
 
 ```bash
-# Download my23term.py
-wget https://raw.githubusercontent.com/yourusername/USBs/main/my23term.py
+# Download myterm.py
+wget https://raw.githubusercontent.com/yourusername/USBs/main/myterm.py
 
 # Or with curl
-curl -O https://raw.githubusercontent.com/yourusername/USBs/main/my23term.py
+curl -O https://raw.githubusercontent.com/yourusername/USBs/main/myterm.py
 
 # Make executable
-chmod +x my23term.py
+chmod +x myterm.py
 ```
 
 ### Method 2: Git Clone
@@ -299,7 +299,7 @@ git clone https://github.com/yourusername/USBs.git
 cd USBs
 
 # Run
-./my23term.py
+./myterm.py
 ```
 
 ### Method 3: Download and Extract
@@ -307,7 +307,7 @@ cd USBs
 1. Download ZIP from GitHub
 2. Extract ZIP file
 3. Open terminal in extracted directory
-4. Run: `./my23term.py`
+4. Run: `./myterm.py`
 
 ---
 
@@ -316,7 +316,7 @@ cd USBs
 ### 1. Launch Terminal
 
 ```bash
-./my23term.py
+./myterm.py
 ```
 
 ### 2. Select Port
@@ -394,14 +394,14 @@ brew install pyserial
 
 **Solution**: Make executable
 ```bash
-chmod +x my23term.py
+chmod +x myterm.py
 ```
 
-### Problem: "./my23term.py: No such file"
+### Problem: "./myterm.py: No such file"
 
 **Solution**: Check you're in correct directory
 ```bash
-ls -la my23term.py
+ls -la myterm.py
 pwd
 ```
 
@@ -413,7 +413,7 @@ After installation, you have:
 
 ```
 USBs/
-├── my23term.py          # Main terminal script
+├── myterm.py          # Main terminal script
 ├── profiles/            # Auto-created profile storage
 │   └── profile_*.json   # Your saved profiles
 ├── README.md            # User documentation
@@ -429,7 +429,7 @@ USBs/
 ### Check Current Version
 
 ```bash
-head -1 my23term.py
+head -1 myterm.py
 # Should show: #!/usr/bin/env python3
 ```
 
@@ -437,16 +437,16 @@ head -1 my23term.py
 
 ```bash
 # Backup current version
-cp my23term.py my23term_backup.py
+cp myterm.py myterm_backup.py
 
 # Download new version
-wget https://raw.githubusercontent.com/yourusername/USBs/main/my23term.py
+wget https://raw.githubusercontent.com/yourusername/USBs/main/myterm.py
 
 # Keep your profiles
 # They're in ./profiles/ directory
 
 # Run new version
-./my23term.py
+./myterm.py
 ```
 
 ---
@@ -465,11 +465,11 @@ wget https://raw.githubusercontent.com/yourusername/USBs/main/my23term.py
 - **Have hardware?** Check device baud rate before connecting
 - **Save often?** Use profile system to save configurations
 - **Theme preference?** Try all 5 themes in Theme menu
-- **Select issues?** Upgrade to my23term.py (v08) for fix
+- **Select issues?** Upgrade to myterm.py (v08) for fix
 
 ---
 
 **Last Updated**: 2026-04-21  
-**Version**: v08 (my23term.py)
+**Version**: v08 (myterm.py)
 
 For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
