@@ -1,132 +1,234 @@
-# USB Serial IDE
+# Serial IDE v08 - Terminal for USB Devices
 
-A powerful yet very lightweight terminal for engineers. Specially tuned for daily work with UART, STM32, ESP, nRF, etc.
+**Cross-platform Serial Terminal for automated testing with Python 3.8+**
 
-![Amber Terminal Screenshot](screenshots/musbs_term_amber.py.png)
+Works on: macOS / Linux / Windows / Termux (Android)
 
-<img src="screenshots/musbs_term_blue.py.png" alt="Описание" width="300"/>
-<img src="screenshots/musbs_term_green_a.py.png" alt="Описание" width="300"/>
-<img src="screenshots/musbs_term_green_b.py.png" alt="Описание" width="300"/>
+![Version](https://img.shields.io/badge/version-08-blue)
+![Python](https://img.shields.io/badge/python-3.8+-green)
+![License](https://img.shields.io/badge/license-MIT-orange)
 
-## Features
+## 🚀 Features
 
-- Hotkeys for everything
-- Quick command list (single click = send)
-- Repeat transmission with configurable interval and repeat count
-- Automatic log saving with nice filename
-- Profiles (saves all settings + commands)
-- Full tolerance to USB port disconnection
-- Dark/light themes
-- Virtual mode for debugging
+### Core Functionality
+- **Serial Communication**: Full pyserial integration with auto-reconnect
+- **Command Execution**: Sequential, Repeat, Range, and Selected modes
+- **Virtual Mode**: Test without physical hardware
+- **Profile System**: Save/Load configurations (4 commands)
+- **5 Color Themes**: Dark, Amber, Blue, White-on-Black, White-on-Blue
 
-## Hotkeys
+### Command Management (40 Commands)
+- **Select Commands**: Toggle individual command selection
+- **Select All/Deselect All**: Batch selection operations
+- **Run Selected**: Execute only selected commands
+- **Run Range**: Execute commands within a range
+- **Status Tracking**: ✓ Success / ✗ Failed with color coding
+- **4-Column Display**: Select checkbox, Line number, Command, Status
 
-| Key           | Action                                           |
-|---------------|--------------------------------------------------|
-| **Ctrl + X**  | Quit program                                     |
-| **Ctrl + B**  | Clear terminal and buffer                        |
-| **Ctrl + C**  | Copy selected text to clipboard                  |
-|               | automatically copies it to the system clipboard. |
-| **Ctrl + F**  | Save default profile                             |
-| **Ctrl + H**  | Show this help                                   |
-| **Esc**       | Return from help back to log                     |
-| **Enter**     | Send command                                     |
-| **Click on right panel line** | Send + copy to input field       |
-| **Double-click on line**      | Edit command                     |
-| **Click on HEX**              | Copy hex string to clipboard     |
+### Visual Design
+- **Selected Rows**: Light green background (#2d4d4d)
+- **Success Status**: Green text (#00ff00) on dark background (#1a1a1a)
+- **Failed Status**: Red text (#ff4444) on dark background (#1a1a1a)
+- **Excellent Readability**: High contrast on all themes
 
-Pressing Ctrl + S now not only saves the log to a file, 
-but also automatically copies it to the system clipboard.
-You can paste it directly (Cmd + V / Ctrl + V) into 
-any editor, chat, notes, etc.
+## 📦 Installation
 
-## Installation & Run
-
-### Quick Start (macOS)
-
+### Prerequisites
 ```bash
-# Clone repository
-git clone https://github.com/your-username/usbs-serial-ide.git
-cd usbs-serial-ide
+# Python 3.8+ required
+python3 --version
 
-# Install dependencies
+# Install pyserial
 pip install pyserial
-
-# Run using system Python (recommended)
-./my_term.py
-# or
-/usr/bin/python3 my_term.py
 ```
 
-### Alternative: Using pyenv
+### Platform-Specific
 
-If you use pyenv and encounter `ModuleNotFoundError: No module named '_tkinter'`:
+#### macOS
+```bash
+# tk is included with system Python
+# Or install with Homebrew:
+brew install python-tk
+```
+
+#### Linux (Debian/Ubuntu)
+```bash
+sudo apt-get install python3-tk
+```
+
+#### Termux (Android)
+```bash
+pkg install python-tk
+```
+
+#### Windows
+```bash
+# tkinter is included with Python
+# Just install pyserial:
+pip install pyserial
+```
+
+## 🎯 Quick Start
 
 ```bash
-# Install Tcl/Tk via Homebrew
-brew install tcl-tk
-
-# Reinstall Python with Tkinter support
-PYTHON_CONFIGURE_OPTS="--with-tcltk-includes='-I$(brew --prefix tcl-tk)/include' --with-tcltk-libs='-L$(brew --prefix tcl-tk)/lib'" \
-pyenv install 3.14.0
-
-# Set local version
-pyenv local 3.14.0
-
-# Install dependencies
-pip install pyserial
+# Make executable
+chmod +x my23term.py
 
 # Run
-./my_term.py
+./my23term.py
 ```
 
-### Linux
+### First Use
+1. Select serial port or use **VIRTUAL** mode
+2. Set baud rate (default: 115200)
+3. Load commands from file or enter manually
+4. Select execution mode:
+   - **Sequential**: Run all commands in order
+   - **Repeat**: Repeat one command continuously
+   - **Range**: Run commands 1-N
+   - **Selected**: Run only selected commands
+5. Click **Start** to begin execution
 
-```bash
-# Install system dependencies
-sudo apt-get install python3-tk  # Debian/Ubuntu
-# or
-sudo dnf install python3-tkinter  # Fedora
+## 🎨 Features in Detail
 
-# Install Python dependencies
-pip install pyserial
+### Theme Selection
+- **dark**: Black background, cyan text (#00FFAA)
+- **amber**: Dark brown background, amber text (#FFB000)
+- **blue**: Dark blue background, light blue text (#7FDBFF)
+- **white_on_black**: Pure black background, white text
+- **white_on_blue**: Dark blue background, white text
 
-# Run
-python3 my_term.py
+### Profile System
+- **Save Profile**: Save current configuration
+- **Save Profile As**: Save with custom name
+- **Load Profile**: Load existing profile
+- **Load Profile As**: Load from custom location
+
+Profiles stored in: `./profiles/`
+
+### Command Selection
+- Click on any command to toggle selection
+- **Select All**: Select all 40 commands
+- **Deselect All**: Clear all selections
+- **Selected counter**: Shows "Selected: X/40"
+
+### Execution Modes
+
+#### Sequential Mode
+Execute all commands in sequence with pattern matching:
+- Wait for "Start" pattern (default: "Start")
+- Wait for "Complete" pattern (default: "Complete")
+- Timeout: 10 seconds after Start
+- Delay: 0.3 seconds after Complete
+
+#### Repeat Mode
+Repeat one command continuously without waiting for response:
+- Select command
+- Click "Repeat"
+- Command executes every 0.5 seconds
+- Click "Stop" to halt
+
+#### Range Mode
+Execute commands 1 through N:
+- Enter range (e.g., "1-10")
+- Only commands in range execute
+- Pattern matching applies
+
+#### Selected Mode
+Execute only selected commands:
+- Select commands with checkboxes (☐/☑)
+- Click "Run Selected Commands"
+- Only selected commands execute
+- Pattern matching applies
+
+## 📊 Status Display
+
+After execution:
+- ✓ = Success (green text)
+- ✗ = Failed (red text)
+- Empty = Not executed
+
+**CRITICAL**: Select column (☐/☑) is preserved after status updates, allowing re-selection of commands.
+
+## 🔧 Configuration
+
+### Window Settings
+- Window geometry saved automatically
+- Restores last position on startup
+
+### EOL Modes
+- **No EOL**: Send commands as-is
+- **Add \n**: Append newline
+- **Add \r\n**: Append carriage return + newline
+
+### Pattern Matching
+Customize in `self.cfg`:
+```python
+self.seq_pattern = cfg.get("seq_pattern", "Complete")  # Pattern to wait for
+self.seq_delay = cfg.get("seq_delay", 0.3)              # Delay after match (seconds)
+self.seq_timeout = cfg.get("seq_timeout", 10)           # Timeout (seconds)
 ```
 
-## Requirements
+## 📁 File Structure
 
-- **Python**: 3.8+ (3.14+ recommended)
-- **pyserial**: `pip install pyserial`
-- **tkinter**: Usually included with Python
-
-## Troubleshooting
-
-### `ModuleNotFoundError: No module named '_tkinter'`
-
-This error occurs when Python was compiled without Tkinter support (common with pyenv on macOS).
-
-**Solution 1**: Use system Python (recommended):
-```bash
-/usr/bin/python3 my_term.py
+```
+USBs/
+├── my23term.py          # Main terminal script
+├── profiles/            # Profile storage
+│   └── profile_*.json
+├── README.md            # This file
+└── CHANGELOG.md         # Version history & fixes
 ```
 
-**Solution 2**: Reinstall Python with Tkinter support (see "Alternative: Using pyenv" above).
+## 🐛 Troubleshooting
 
-### `ModuleNotFoundError: No module named 'serial'`
+See [CHANGELOG.md](CHANGELOG.md) for detailed fixes and solutions to common issues.
 
-Install pyserial:
-```bash
-pip install pyserial
-```
+### Common Issues
 
-### Permission denied on `/dev/tty.usb*`
+**Problem**: "tkinter not available"
+- **Solution**: Install python-tk for your platform (see Installation)
 
-On macOS, you may need to add your user to the `dialout` group or use `sudo` (not recommended).
+**Problem**: Cannot select commands after test execution
+- **Solution**: This was a bug in v01-v22. **Fixed in v23** - Select column now preserved
 
-On Linux:
-```bash
-sudo usermod -a -G dialout $USER
-# Log out and log back in
-```
+**Problem**: Port disconnects frequently
+- **Solution**: Enable auto-reconnect (default: 5 attempts, 2s delay)
+
+**Problem**: Commands not executing
+- **Solution**: Check pattern matching settings and serial connection
+
+## 📝 Version History
+
+### v08 (Current) - my23term.py
+- ✅ **CRITICAL FIX**: Select column preserved after status updates
+- ✅ 4-column format: (Select, #, Command, Status)
+- ✅ Improved visual design with better colors
+- ✅ Profile system (4 commands)
+- ✅ Theme menu (5 themes)
+- ✅ Repeat mode without response waiting
+- ✅ Excellent readability on all platforms
+
+See [CHANGELOG.md](CHANGELOG.md) for complete history.
+
+## 🤝 Contributing
+
+This terminal is actively maintained. Issues and pull requests are welcome.
+
+## 📄 License
+
+MIT License - Feel free to use in your projects!
+
+## 🙏 Acknowledgments
+
+Built with:
+- Python 3.8+
+- pyserial
+- tkinter (cross-platform GUI)
+- Community feedback and testing
+
+---
+
+**Made with ❤️ for embedded developers and testers**
+
+For detailed technical information and bug fixes, see [CHANGELOG.md](CHANGELOG.md)
