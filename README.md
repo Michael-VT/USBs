@@ -76,10 +76,10 @@ pip install pyserial
 
 ```bash
 # Make executable
-chmod +x my23term.py
+chmod +x myterm.py
 
 # Run
-./my23term.py
+./myterm.py
 ```
 
 ### First Use
@@ -177,7 +177,7 @@ self.seq_timeout = cfg.get("seq_timeout", 10)           # Timeout (seconds)
 
 ```
 USBs/
-├── my23term.py          # Main terminal script
+├── myterm.py          # Main terminal script
 ├── profiles/            # Profile storage
 │   └── profile_*.json
 ├── README.md            # This file
@@ -204,7 +204,7 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed fixes and solutions to common issu
 
 ## 📝 Version History
 
-### v08 (Current) - my23term.py
+### v08 (Current) - myterm.py
 - ✅ **CRITICAL FIX**: Select column preserved after status updates
 - ✅ 4-column format: (Select, #, Command, Status)
 - ✅ Improved visual design with better colors
