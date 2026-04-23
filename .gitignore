@@ -1,4 +1,6 @@
 __pycache__/
 BackUp/
+.gitignore
+.python-version
 .DS_Store
 2026*.txt
